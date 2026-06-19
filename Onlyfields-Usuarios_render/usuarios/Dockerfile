@@ -1,31 +1,13 @@
-FROM ghcr.io/graalvm/native-image-community:17 AS builder
-WORKDIR /build
+# Usar una imagen base liviana con JDK 17
+FROM eclipse-temurin:17-jdk-alpine
 
-COPY pom.xml .
-COPY .mvn ./.mvn
-COPY mvnw .
-COPY usuarios ./usuarios
-COPY reservas ./reservas
-COPY pos ./pos
-COPY suscripciones ./suscripciones
-COPY inventario ./inventario
-COPY accesos ./accesos
-COPY seguimiento ./seguimiento
-COPY reportes ./reportes
-COPY configuracion ./configuracion
-COPY notificaciones ./notificaciones
+VOLUME /tmp
 
-WORKDIR /build
-RUN chmod +x mvnw
-RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
-RUN ../mvnw dependency:go-offline -q -pl usuarios -am
-RUN ../mvnw clean native:compile -Pnative -DskipTests -pl usuarios -am
-
-FROM gcr.io/distroless/base-debian12
-WORKDIR /app
-
-COPY --from=builder /usr/lib64/libz.so.1 /lib/
-COPY --from=builder /build/usuarios/target/ms-usuarios /app/ms-usuarios
-
+# Puerto que expone tu microservicio de Spring Boot
 EXPOSE 8081
-ENTRYPOINT ["/app/ms-usuarios"]
+
+# Copia el .jar generado por Maven desde la subcarpeta usuarios hacia la raíz del contenedor
+COPY usuarios/target/*.jar app.jar
+
+# Comando para ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "/app.jar"]
