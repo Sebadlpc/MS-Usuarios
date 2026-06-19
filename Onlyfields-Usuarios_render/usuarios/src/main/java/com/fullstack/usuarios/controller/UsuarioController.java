@@ -42,7 +42,7 @@ public class UsuarioController {
     }
 
     /**
-     * Autentica a un usuario en el sistema.
+     * Auténtica a un usuario en el sistema.
      * @param dto El DTO con las credenciales de login (email y contraseña).
      */
     @PostMapping("/login")
