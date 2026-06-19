@@ -12,7 +12,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 VOLUME /tmp
-EXPOSE 8080
+EXPOSE 8081
 
 # Copiar el archivo .jar generado en la etapa anterior
 COPY --from=build /app/usuarios/target/*.jar app.jar
